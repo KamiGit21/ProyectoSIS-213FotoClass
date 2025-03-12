@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Un path genérico para compartir archivos -->
+    <external-path name="shared_images" path="." />
+    <!-- O un cache-path si tu contenido se ubica en /data/user/0/.../cache/ -->
+    <cache-path name="cache" path="." />
+</paths>

@@ -1,0 +1,24 @@
+name: foto_class
+description: FotoClass, una aplicación para tomar y clasificar fotos automáticamente.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"  # Idealmente Flutter 3.x
+
+dependencies:
+  flutter:
+    sdk: flutter
+  image_picker: ^1.1.2
+  path_provider: ^2.0.12
+  permission_handler: ^11.4.0
+  sqflite: ^2.2.8+4
+  path: ^1.8.3
+  shared_preferences: ^2.5.2
+  share_plus: ^10.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
