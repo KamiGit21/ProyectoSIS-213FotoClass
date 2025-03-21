@@ -19,21 +19,21 @@ class _InitialSetupScreenState extends State<InitialSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CONFIGURACIÓN INICIAL'),
+        title: const Text('Configuración Inicial'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             const Text(
-              'Bienvenido a FotoClass, por favor ingresa tu nombre:',
+              'Bienvenido. Ingresa tu nombre y agrega asignaturas iniciales.',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
-                labelText: 'Nombre',
+                labelText: 'Tu nombre',
               ),
             ),
             const SizedBox(height: 16),
@@ -65,13 +65,13 @@ class _InitialSetupScreenState extends State<InitialSetupScreen> {
               children: [
                 ElevatedButton.icon(
                   icon: const Icon(Icons.add),
-                  label: const Text('AGREGAR ASIGNATURA'),
+                  label: const Text('Agregar Asignatura'),
                   onPressed: _showAddTempSubjectDialog,
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.save),
-                  label: const Text('GUARDAR'),
+                  label: const Text('Guardar'),
                   onPressed: _onSaveConfiguration,
                 )
               ],
@@ -93,7 +93,7 @@ class _InitialSetupScreenState extends State<InitialSetupScreen> {
         return StatefulBuilder(
           builder: (ctx, setStateSB) {
             return AlertDialog(
-              title: const Text('AGREGAR ASIGNATURA'),
+              title: const Text('Agregar Asignatura'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -101,13 +101,13 @@ class _InitialSetupScreenState extends State<InitialSetupScreen> {
                     TextField(
                       controller: subjectNameController,
                       decoration: const InputDecoration(
-                        labelText: 'NOMBRE DE LA ASIGNATURA',
+                        labelText: 'Nombre de la Asignatura',
                       ),
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        const Text("HORA DE INICIO: "),
+                        const Text("Inicio: "),
                         TextButton(
                           onPressed: () async {
                             final picked = await showTimePicker(
@@ -126,7 +126,7 @@ class _InitialSetupScreenState extends State<InitialSetupScreen> {
                     ),
                     Row(
                       children: [
-                        const Text("HORA DE FIN: "),
+                        const Text("Fin: "),
                         TextButton(
                           onPressed: () async {
                             final picked = await showTimePicker(
@@ -149,7 +149,7 @@ class _InitialSetupScreenState extends State<InitialSetupScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('CANCELAR'),
+                  child: const Text('Cancelar'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -167,7 +167,7 @@ class _InitialSetupScreenState extends State<InitialSetupScreen> {
                     }
                     Navigator.of(ctx).pop();
                   },
-                  child: const Text('AGREGAR'),
+                  child: const Text('Agregar'),
                 ),
               ],
             );
