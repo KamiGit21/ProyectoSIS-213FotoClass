@@ -44,6 +44,7 @@ class _FotoClassAppState extends State<FotoClassApp> {
     }
     return MaterialApp(
       title: 'FotoClass',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
