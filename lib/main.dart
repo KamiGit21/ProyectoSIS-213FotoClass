@@ -19,6 +19,17 @@ class _FotoClassAppState extends State<FotoClassApp> {
   bool _isConfigured = false;
   bool _isLoading = true;
 
+  // NUEVO: Modo de tema (light/dark)
+  ThemeMode _themeMode = ThemeMode.light;
+
+  void _toggleThemeMode() {
+    setState(() {
+      _themeMode = (_themeMode == ThemeMode.light)
+          ? ThemeMode.dark
+          : ThemeMode.light;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -44,12 +55,17 @@ class _FotoClassAppState extends State<FotoClassApp> {
     }
     return MaterialApp(
       title: 'FotoClass',
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        brightness: Brightness.light,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.blue,
+      ),
+      themeMode: _themeMode,
       home: _isConfigured
-          ? const HomeScreen()
+          ? HomeScreen(onToggleTheme: _toggleThemeMode) // <-- PASAMOS callback
           : const InitialSetupScreen(),
     );
   }

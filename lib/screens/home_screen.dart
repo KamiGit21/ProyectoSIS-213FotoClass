@@ -6,11 +6,14 @@ import '../services/permission_service.dart';
 import '../services/subject_db_service.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-  
+  final VoidCallback? onToggleTheme; // NUEVO param
+
+  const HomeScreen({Key? key, this.onToggleTheme}) : super(key: key);
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
 
 class _HomeScreenState extends State<HomeScreen> {
   String _message = "Presiona el botón para tomar una foto";
@@ -173,11 +176,16 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('FotoClass'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _showAddSubjectDialog,
-          ),
-        ],
+        // NUEVO: Ícono para alternar tema
+        IconButton(
+          icon: const Icon(Icons.brightness_6),
+          onPressed: widget.onToggleTheme, // Llama al callback
+        ),
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: _showAddSubjectDialog,
+        ),
+      ],
       ),
       body: Column(
         children: [
@@ -235,3 +243,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+

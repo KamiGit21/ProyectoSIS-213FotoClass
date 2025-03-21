@@ -182,9 +182,14 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
       body: Center(
         child: Opacity(
           opacity: _isUsed ? 0.5 : 1.0,
-          child: Image.file(file, fit: BoxFit.contain),
+          child: InteractiveViewer(
+            minScale: 1,
+            maxScale: 5, // Ajusta según quieras
+            child: Image.file(file, fit: BoxFit.contain),
+          ),
         ),
       ),
+
     );
   }
 }
