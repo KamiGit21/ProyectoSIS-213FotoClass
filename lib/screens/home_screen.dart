@@ -1,5 +1,5 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foto_class/screens/subject_detail_screen.dart';
 import '../services/photo_service.dart';
 import '../services/permission_service.dart';
@@ -14,11 +14,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _message = "Presiona el botón para tomar una foto";
+  bool _isDarkMode = false;
   
   @override
   void initState() {
     super.initState();
     PermissionService.requestPermissions();
+    _loadThemePreference();
+  }
+
+  Future<void> _loadThemePreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
+
+  Future<void> _toggleTheme(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = value;
+    });
+    await prefs.setBool('isDarkMode', value);
   }
   
   Future<void> _takePhoto() async {
@@ -26,6 +43,18 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _message = result;
     });
+  }
+
+  void _openSubjectDetail(String subjectName) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SubjectDetailScreen(subjectName: subjectName),
+      ),
+    );
+    if (result == true) {
+      setState(() {});
+    }
   }
   
   void _showAddSubjectDialog() {
@@ -101,8 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () async {
                     final subjectName = nameController.text.trim();
                     if (subjectName.isNotEmpty) {
-                      final startStr = "${startTime.hour.toString().padLeft(2,'0')}:${startTime.minute.toString().padLeft(2,'0')}";
-                      final endStr = "${endTime.hour.toString().padLeft(2,'0')}:${endTime.minute.toString().padLeft(2,'0')}";
+                      final startStr = "${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}";
+                      final endStr = "${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}";
                       await SubjectDBService.insertAsignatura(
                         Asignatura(nombre: subjectName, horarioInicio: startStr, horarioFin: endStr)
                       );
@@ -121,52 +150,39 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   
   void _deleteSubject(String name) async {
-    if (name == 'Otros') return;
-    final subjects = await SubjectDBService.getAllAsignaturas();
-    final subject = subjects.firstWhere(
-      (s) => s.nombre == name, 
-      orElse: () => Asignatura(nombre: '', horarioInicio: '', horarioFin: '')
-    );
-    if (subject.nombre.isEmpty) return;
-    
-    showDialog(
+    if (name == 'Otros') return; // No permitir eliminar "Otros"
+
+    final confirmDelete = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Eliminar $name'),
-        content: const Text('¿Estás seguro de eliminar esta asignatura?'),
+        title: Text('Confirmar eliminación'),
+        content: Text('¿Estás seguro de que quieres eliminar "$name"?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
+            onPressed: () => Navigator.of(ctx).pop(false), // Cancelar
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
-            onPressed: () async {
-              await SubjectDBService.deleteAsignatura(subject.idAsignatura!);
-              setState(() {});
-              Navigator.of(ctx).pop();
-            },
+            onPressed: () => Navigator.of(ctx).pop(true), // Confirmar
             child: const Text('Eliminar'),
           ),
         ],
-      )
+      ),
     );
-  }
-  
-  void _openSubjectDetail(String subjectName) async {
-  final result = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => SubjectDetailScreen(subjectName: subjectName),
-    ),
-  );
-  if (result == true) {
-    // Se renombró => recarga la lista
-    setState(() {});
-  }
-}
 
+    if (confirmDelete == true) {
+      final subjects = await SubjectDBService.getAllAsignaturas();
+      final subject = subjects.firstWhere(
+        (s) => s.nombre == name, 
+        orElse: () => Asignatura(nombre: '', horarioInicio: '', horarioFin: '')
+      );
+      if (subject.nombre.isNotEmpty) {
+        await SubjectDBService.deleteAsignatura(subject.idAsignatura!);
+        setState(() {}); // Recargar la lista de asignaturas
+      }
+    }
+  }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -176,6 +192,10 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: _showAddSubjectDialog,
+          ),
+          Switch(
+            value: _isDarkMode,
+            onChanged: _toggleTheme,
           ),
         ],
       ),

@@ -1,56 +1,50 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/home_screen.dart';
-import 'screens/initial_setup_screen.dart';
+import 'package:foto_class/screens/home_screen.dart';
 
-void main() {
-  runApp(const FotoClassApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final isDarkMode = prefs.getBool('isDarkMode') ?? false;
+
+  runApp(MyApp(isDarkMode: isDarkMode));
 }
 
-class FotoClassApp extends StatefulWidget {
-  const FotoClassApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  final bool isDarkMode;
+
+  const MyApp({Key? key, required this.isDarkMode}) : super(key: key);
 
   @override
-  State<FotoClassApp> createState() => _FotoClassAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
-class _FotoClassAppState extends State<FotoClassApp> {
-  bool _isConfigured = false;
-  bool _isLoading = true;
+class _MyAppState extends State<MyApp> {
+  late bool _isDarkMode;
 
   @override
   void initState() {
     super.initState();
-    _checkConfiguration();
+    _isDarkMode = widget.isDarkMode;
   }
 
-  Future<void> _checkConfiguration() async {
-    final prefs = await SharedPreferences.getInstance();
+  void _toggleTheme(bool value) async {
     setState(() {
-      _isConfigured = prefs.getBool('isConfigured') ?? false;
-      _isLoading = false;
+      _isDarkMode = value;
     });
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', value);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return MaterialApp(
-        home: Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        ),
-      );
-    }
     return MaterialApp(
-      title: 'FotoClass',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      home: HomeScreen(
+        isDarkMode: _isDarkMode,
+        toggleTheme: _toggleTheme,
       ),
-      home: _isConfigured
-          ? const HomeScreen()
-          : const InitialSetupScreen(),
     );
   }
 }
